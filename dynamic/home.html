@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task List</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .done { color: green; text-decoration: line-through; }
+        .pending { color: red; }
+        button { margin-left: 5px; }
+    </style>
+</head>
+<body>
+<h1>Task List</h1>
+
+<!-- Add Task -->
+<form method="POST" action="{% url 'add_task' %}">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="New task" required>
+    <button type="submit">Add</button>
+</form>
+
+<!-- Task Table -->
+<ul>
+    {% for task in tasks %}
+    <li class="{% if task.is_done %}done{% else %}pending{% endif %}">
+        {{ task.title }}
+        {% if not task.is_done %}
+            <a href="{% url 'mark_done' task.id %}"><button>Mark Done</button></a>
+        {% endif %}
+        <a href="{% url 'delete_task' task.id %}"><button>Delete</button></a>
+    </li>
+    {% empty %}
+    <li>No tasks yet!</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
