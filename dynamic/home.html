@@ -1,38 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Task List</title>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        .done { color: green; text-decoration: line-through; }
-        .pending { color: red; }
-        button { margin-left: 5px; }
-    </style>
+  <meta charset="utf-8" />
+  <title>URL Shortener</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 24px; max-width: 720px; margin: auto; }
+    h1 { margin-bottom: 8px; }
+    form { display: grid; gap: 10px; margin: 16px 0 20px; }
+    input[type="text"] { padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; width: 100%; }
+    button { padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; }
+    .primary { background: #3b82f6; color: white; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .hint { color: #666; font-size: 14px; }
+    .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; background: #fafafa; }
+    .error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px; margin: 10px 0; }
+    .success { color: #065f46; background: #d1fae5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  </style>
 </head>
 <body>
-<h1>Task List</h1>
+  <h1>URL Shortener</h1>
+  <p class="hint">Paste a long URL, optionally set your own short code, and get a short link.</p>
 
-<!-- Add Task -->
-<form method="POST" action="{% url 'add_task' %}">
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="card">
     {% csrf_token %}
-    <input type="text" name="title" placeholder="New task" required>
-    <button type="submit">Add</button>
-</form>
+    <label>
+      Long URL
+      <input type="text" name="url" placeholder="https://example.com/very/long/link" required />
+    </label>
 
-<!-- Task Table -->
-<ul>
-    {% for task in tasks %}
-    <li class="{% if task.is_done %}done{% else %}pending{% endif %}">
-        {{ task.title }}
-        {% if not task.is_done %}
-            <a href="{% url 'mark_done' task.id %}"><button>Mark Done</button></a>
-        {% endif %}
-        <a href="{% url 'delete_task' task.id %}"><button>Delete</button></a>
-    </li>
-    {% empty %}
-    <li>No tasks yet!</li>
-    {% endfor %}
-</ul>
+    <div class="row">
+      <input type="text" name="custom" placeholder="Custom code (optional), e.g. my-link" />
+      <button class="primary" type="submit">Shorten</button>
+    </div>
+    <div class="hint">Your short link will look like <code>{{ request.get_host }}/yourcode</code></div>
+  </form>
 
+  {% if short_url %}
+    <div class="success">
+      <div><strong>Short URL:</strong> <a href="{{ short_url }}" target="_blank">{{ short_url }}</a></div>
+      <button id="copyBtn">Copy</button>
+    </div>
+    <script>
+      document.getElementById('copyBtn').onclick = async () => {
+        await navigator.clipboard.writeText("{{ short_url }}");
+        const btn = document.getElementById('copyBtn');
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = old, 1200);
+      };
+    </script>
+  {% endif %}
 </body>
 </html>

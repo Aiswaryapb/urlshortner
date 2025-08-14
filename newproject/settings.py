@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-0)(m$v75pnh2=*-*f51z8*88oat(si3pe1zih9t5^%&tcckxd9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['interview-65jb.onrender.com']
+ALLOWED_HOSTS = ['interview-65jb.onrender.com','127.0.0.1', 'localhost']
 
 SECRET_KEY = '8ba40179e2ad4cb5c7b95f3c27f588ec'
 
